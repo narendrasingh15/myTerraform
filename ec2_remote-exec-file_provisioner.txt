@@ -1,0 +1,37 @@
+# Description: Playbook to Install Ec2 instance having Key, SG, AZ etc allocated then running commands using remote-exec then transferrring a File from Local to Remote Ec2-Server
+resource "aws_instance" "Naren-Instance" {
+  ami = "ami-04ea996e7a3e7ad6b"
+  availability_zone = "ap-south-1b"
+  key_name = "MyKeyPair"
+  instance_type = "t2.micro"
+  security_groups = ["myMumbaiSG"]
+  tags {
+    Name = "TestServer"
+    Role = "Terraform-Testing"
+  }
+  provisioner "remote-exec" {
+    inline = [
+      "sudo apt-get update -y",
+      "sudo apt-get install apache2 -y",
+      "sudo /etc/init.d/apache2 start",
+      "sudo chmod 777 /var/www/html/index.html"
+    ]
+  }
+  provisioner "file" {
+    source = "/home/ubuntu/playbook/html_files/naren.html"
+    destination = "/var/www/html/index.html"
+    }
+  connection {
+    user = "ubuntu"
+    type = "ssh"
+    private_key = "${file("./Keys/MyKeyPair.pem")}"
+    }
+  provisioner "remote-exec" {
+    inline = [
+      "sudo chmod 644 /var/www/html/index.html"
+    ]
+  }
+}
+output "public_ip" {
+  value = "${aws_instance.Naren-Instance.public_ip}"
+}

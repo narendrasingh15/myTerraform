@@ -1,0 +1,31 @@
+# Description: Playbook to Install Ec2 instance having Key, SG, AZ etc allocated
+resource "aws_instance" "Naren-Instance" {
+  ami = "ami-04ea996e7a3e7ad6b"
+  availability_zone = "ap-south-1b"
+  key_name = "MyKeyPair"
+  instance_type = "t2.micro"
+  security_groups = ["myMumbaiSG"]
+  tags {
+    Name = "TestServer"
+    Role = "Terraform-Testing"
+  }
+  user_data = <<-EOF
+    #!/bin/bash
+    apt-get update -y
+    apt-get install apache2 -y
+    echo "<html>Hello This is my First Terraform Instance using Metadata</html>" > /var/www/html/index.html
+    /etc/init.d/apache2 start
+    EOF
+  provisioner "file" {
+    source = "/home/ubuntu/playbook/html_files/naren.html"
+    destination = "/tmp/index.html"
+  }
+
+  connection {
+    user = "ubuntu"
+    type = "ssh"
+    private_key = "${file("./Keys/MyKeyPair.pem")}"
+    timeout = "2m"
+    agent = false
+  }
+}
