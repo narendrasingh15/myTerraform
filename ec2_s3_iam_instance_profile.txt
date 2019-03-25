@@ -1,4 +1,4 @@
-# Description: Playbook to Create an EC2 Instance having S3 Role attached using IAM Instance Profile
+# Description: Playbook to Create S3 Buckets and EC2 Instances having S3 Role attached using IAM Instance Profile
 resource "aws_instance" "Naren-Instance" {
   ami = "ami-0912f71e06545ad88"
   availability_zone = "ap-south-1b"
