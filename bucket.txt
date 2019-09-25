@@ -1,9 +1,0 @@
-resource "aws_s3_bucket" "bucket" {
-  bucket = "narenbucket150188"
-  region = "ap-south-1"
-  acl = "public-read"
-  versioning {
-    enabled = true
-  }
-}
-
